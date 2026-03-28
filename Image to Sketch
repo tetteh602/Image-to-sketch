@@ -1,0 +1,44 @@
+import cv2
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
+# Hide the main Tkinter window
+Tk().withdraw()
+
+# Open file dialog to select image
+file_path = askopenfilename(
+    title="Select an Image",
+    filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp")]
+)
+
+if not file_path:
+    print("No file selected.")
+    exit()
+
+# Read the image
+image = cv2.imread(file_path)
+
+# Convert to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Invert the grayscale image
+inverted = 255 - gray
+
+# Blur the inverted image
+blur = cv2.GaussianBlur(inverted, (21, 21), 0)
+
+# Invert the blurred image
+inverted_blur = 255 - blur
+
+# Create the sketch
+sketch = cv2.divide(gray, inverted_blur, scale=256.0)
+
+# Show the result
+cv2.imshow("Original Image", image)
+cv2.imshow("Sketch Image", sketch)
+
+# Save the sketch
+cv2.imwrite("sketch_output.png", sketch)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
